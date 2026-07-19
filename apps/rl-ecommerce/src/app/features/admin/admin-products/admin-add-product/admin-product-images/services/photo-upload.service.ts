@@ -30,14 +30,19 @@ export class PhotoUploadService {
     );
   }
 
-  getImageUrl(filePath: string): Observable<any> {
-    return defer(() =>
-      from(
-        this.supabase.storage
-          .from(this.BUCKET_NAME)
-          .createSignedUrl(filePath, 315576000),
-      ),
-    ).pipe(map(({ data }) => data));
+  getImageUrl(filePath: string): Observable<string> {
+    const { data } = this.supabase.storage
+      .from(this.BUCKET_NAME)
+      .getPublicUrl(filePath);
+
+    return of(data.publicUrl);
+    // return defer(() =>
+    //   from(
+    //     this.supabase.storage
+    //       .from(this.BUCKET_NAME)
+    //       .getPublicUrl(filePath)
+    //   ),
+    // ).pipe(map(({ data }) => data));
   }
 
   removeImage(imageUrl: string): Observable<any> {

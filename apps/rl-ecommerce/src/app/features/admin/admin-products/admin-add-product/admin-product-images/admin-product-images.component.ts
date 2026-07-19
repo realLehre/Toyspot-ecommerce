@@ -205,7 +205,7 @@ export class AdminProductImagesComponent implements OnInit {
       .subscribe({
         next: (res) => {
           if (type == 'multiple') {
-            this.imageUrls[index!] = res.signedUrl;
+            this.imageUrls[index!] = res;
             const boxes = [...this.uploadBoxes()];
             boxes[index!] = {
               ...boxes[index!],
@@ -213,7 +213,7 @@ export class AdminProductImagesComponent implements OnInit {
             };
             this.uploadBoxes.set(boxes);
           } else {
-            this.coverImageUrl = res.signedUrl;
+            this.coverImageUrl = res;
             this.coverImage.set({
               ...this.coverImage(),
               isUploading: false,

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["-y", "@angular/cli", "mcp"]
+    }
+  },
+  "model": {
+    "name": "gemini-3.5-flash-lite"
+  }
+}

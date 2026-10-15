@@ -162,6 +162,7 @@ export class UserOrdersTableComponent implements OnInit {
 
   onRetryLoad() {
     this.refresh.update((count) => count + 1);
+    this.isError.set(false);
   }
 
   pageChange(page: number) {

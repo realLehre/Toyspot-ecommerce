@@ -49,12 +49,18 @@
     aria-label="RL AI Shopping Assistant Chat"
   >
     <!-- Chat Header -->
-    <div class="bg-[#800020] text-white px-4 py-3 flex items-center justify-between shadow-sm">
+    <div
+      class="bg-[#800020] text-white px-4 py-3 flex items-center justify-between shadow-sm"
+    >
       <div class="flex items-center space-x-2">
         <span class="w-2.5 h-2.5 bg-green-400 rounded-full inline-block"></span>
         <div>
-          <h2 class="font-semibold text-sm leading-tight text-white">RL AI Assistant</h2>
-          <p class="text-[11px] text-gray-200">Online • Product & Order Support</p>
+          <h2 class="font-semibold text-sm leading-tight text-white">
+            ToySpot AI Assistant
+          </h2>
+          <p class="text-[11px] text-gray-200">
+            Online • Product & Order Support
+          </p>
         </div>
       </div>
       <button
@@ -81,6 +87,10 @@
       </button>
     </div>
 
+    <p class="text-type_grey text-sm p-2">
+      Welcome to the ToySpot AI Shopping Assistant!
+    </p>
+
     <!-- Messages Container -->
     <div
       #messagesScroll
@@ -88,48 +98,57 @@
       tabindex="0"
       aria-live="polite"
     >
-      @for (msg of messages(); track $index) {
+      @for (msg of chatHistory(); track $index) {
         <div
           class="flex flex-col"
-          [class.items-end]="msg.sender === 'user'"
-          [class.items-start]="msg.sender === 'ai'"
+          [class.items-end]="msg.role === 'user'"
+          [class.items-start]="msg.role === 'ai'"
         >
           <div
             class="max-w-[85%] px-3.5 py-2.5 rounded-2xl whitespace-pre-line shadow-sm leading-relaxed"
-            [class.bg-[#800020]]="msg.sender === 'user'"
-            [class.text-white]="msg.sender === 'user'"
-            [class.rounded-br-none]="msg.sender === 'user'"
-            [class.bg-white]="msg.sender === 'ai'"
-            [class.text-type_title]="msg.sender === 'ai'"
-            [class.border]="msg.sender === 'ai'"
-            [class.border-border_subtle]="msg.sender === 'ai'"
-            [class.rounded-bl-none]="msg.sender === 'ai'"
+            [class]="msg.role === 'user' ? userClasses : aiClasses"
           >
-            {{ msg.text }}
+            {{ msg.parts[0].text }}
           </div>
-          <span class="text-[10px] text-gray-400 mt-1 px-1">
-            {{ msg.timestamp | date:'shortTime' }}
-          </span>
-        </div>
-      }
 
-      @if (isLoading()) {
-        <div class="flex items-start">
-          <div class="bg-white border border-border_subtle px-4 py-3 rounded-2xl rounded-bl-none shadow-sm flex items-center space-x-1.5">
-            <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-            <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-            <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-          </div>
+          @if (chatError() && $last) {
+            <button
+              class="text-red-500 underline text-xs mt-1 border-0 bg-transparent"
+              (click)="sendMessage('resend')"
+            >
+              ! Resend
+            </button>
+          }
         </div>
       }
     </div>
 
+    @if (isLoading()) {
+      <div class="p-2 flex items-start">
+        <div
+          class="bg-white border border-border_subtle px-4 py-3 rounded-2xl rounded-bl-none shadow-sm flex items-center space-x-1.5"
+        >
+          <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+          <span
+            class="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"
+          ></span>
+          <span
+            class="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"
+          ></span>
+        </div>
+      </div>
+    }
+
     <!-- Quick Suggestions -->
-    <div class="px-3 py-2 bg-white border-t border-gray-100 flex gap-1.5 overflow-x-auto text-[11px] no-scrollbar">
+    <div
+      class="px-3 py-2 bg-white border-t border-gray-100 flex gap-1.5 overflow-x-auto text-[11px] no-scrollbar"
+    >
       <button
         type="button"
         class="bg-bg_subtle hover:bg-gray-200 text-type_grey px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-colors"
-        (click)="userInput.set('Show products under 30 days old'); sendMessage()"
+        (click)="
+          userInput.set('Show products under 30 days old'); sendMessage()
+        "
       >
         Products &lt; 30 days
       </button>
@@ -150,7 +169,9 @@
     </div>
 
     <!-- Message Input Bar -->
-    <div class="p-3 bg-white border-t border-border_subtle flex items-center space-x-2">
+    <div
+      class="p-3 bg-white border-t border-border_subtle flex items-center space-x-2"
+    >
       <input
         type="text"
         [value]="userInput()"

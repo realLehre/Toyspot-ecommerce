@@ -23,6 +23,7 @@ import { IProduct } from '../products/model/product.interface';
 import { ToastService } from '../../shared/services/toast.service';
 import { Store } from '@ngrx/store';
 import {
+  loadCart,
   removeItemFromCart,
   updateCartItem,
 } from '../../state/cart/cart.actions';
@@ -79,8 +80,8 @@ export class CartComponent {
           this.showDeleteDialog.set(false);
         }
       }),
-      map((operation) => (operation.error ? false : operation.delete?.loading)),
-    ),
+      map((operation) => (operation.error ? false : operation.delete?.loading))
+    )
   );
   updateError = signal(false);
   isUpdating: Signal<boolean[] | any> = toSignal(
@@ -111,8 +112,8 @@ export class CartComponent {
         }
 
         return loadingStates;
-      }),
-    ),
+      })
+    )
   );
 
   onAdjustQuantity(qty: number, item: ICartItems, idx: number) {
@@ -123,7 +124,7 @@ export class CartComponent {
         itemId: item.id,
         unit: this.quantity,
         product: item.product as IProduct,
-      }),
+      })
     );
   }
 
@@ -144,7 +145,11 @@ export class CartComponent {
       ['/product/' + this.productService.createSlug(product.name)],
       {
         queryParams: { id: product.id },
-      },
+      }
     );
+  }
+
+  onRefreshCart() {
+    this.store.dispatch(loadCart());
   }
 }

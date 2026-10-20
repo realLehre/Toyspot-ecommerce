@@ -4,6 +4,7 @@ import {
   signal,
   ElementRef,
   viewChild,
+  AfterViewInit,
 } from '@angular/core';
 import { ProductsService } from '../../products/services/products.service';
 import { CartService } from '../../../shared/services/cart.service';
@@ -18,7 +19,7 @@ import { AiChatService } from './ai-chat.service';
   styleUrls: ['./ai-chat.component.scss'],
   standalone: true,
 })
-export class AiChatComponent {
+export class AiChatComponent implements AfterViewInit {
   private productsService = inject(ProductsService);
   private cartService = inject(CartService);
   private orderService = inject(OrderService);
@@ -38,6 +39,10 @@ export class AiChatComponent {
 
   messagesContainer = viewChild<ElementRef>('messagesScroll');
 
+  ngAfterViewInit() {
+    this.scrollToBottom();
+  }
+
   toggleChat() {
     this.isOpen.update((val) => !val);
   }
@@ -48,6 +53,8 @@ export class AiChatComponent {
   }
 
   sendMessage(action?: string) {
+    if (this.isLoading()) return;
+
     const text =
       action === 'resend'
         ? this.chatHistory()[this.chatHistory().length - 1].parts[0].text
@@ -71,6 +78,7 @@ export class AiChatComponent {
           );
           this.chatHistory.set(formatedHistory);
           this.backgroundHistory.set(formatedHistory);
+          this.aiChatService.performActions(response.actions);
           console.log(response);
           this.isLoading.set(false);
           this.scrollToBottom();

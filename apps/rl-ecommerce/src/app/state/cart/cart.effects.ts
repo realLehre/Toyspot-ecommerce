@@ -15,6 +15,7 @@ import {
   mergeCart,
   mergeCartFailure,
   mergeCartSuccess,
+  refreshCart,
   removeItemFromCart,
   resetOperations,
   updateCartItem,
@@ -31,21 +32,33 @@ import {
   withLatestFrom,
 } from 'rxjs';
 import { selectCartState } from '../state';
-import { ToastService } from '../../shared/services/toast.service';
 import { logout_clearState } from '../state.actions';
 
 @Injectable()
 export class CartEffects {
   private actions$ = inject(Actions);
   private cartService = inject(CartService);
-  private toast = inject(ToastService);
   private store = inject(Store);
 
   loadCart$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(loadCart),
+      ofType(loadCart || refreshCart),
       switchMap(() =>
         this.cartService.getCart().pipe(
+          map((res) => loadCartSuccess({ cart: res! })),
+          catchError((err) =>
+            of(loadCartFailure({ error: err.error.message })),
+          ),
+        ),
+      ),
+    );
+  });
+
+  refreshCart$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(refreshCart),
+      switchMap(() =>
+        this.cartService.fetchCart().pipe(
           map((res) => loadCartSuccess({ cart: res! })),
           catchError((err) =>
             of(loadCartFailure({ error: err.error.message })),

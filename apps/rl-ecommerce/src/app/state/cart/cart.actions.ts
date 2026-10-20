@@ -5,6 +5,8 @@ import { CartState } from './cart.reducer';
 
 export const loadCart = createAction('[Cart] Load Cart');
 
+export const refreshCart = createAction('[Cart] Refresh Cart');
+
 export const loadCartSuccess = createAction(
   '[Cart] Load Cart Success',
   props<{ cart: ICart }>(),

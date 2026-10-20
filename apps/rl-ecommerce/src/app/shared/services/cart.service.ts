@@ -9,7 +9,12 @@ import { MergeCartAlertDialogComponent } from '../components/merge-cart-alert-di
 import { AuthService } from '../../features/auth/services/auth.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Store } from '@ngrx/store';
-import { mergeCart } from '../../state/cart/cart.actions';
+import {
+  addToCart,
+  loadCart,
+  mergeCart,
+  refreshCart,
+} from '../../state/cart/cart.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +31,7 @@ export class CartService {
   GUEST_CART_KEY = 'hd30jlsncjefysakhs';
   CART_KEY = 'sjshdy382nsj02shk02s';
   cart = signal<ICart | null>(null);
+
   constructor() {
     const guestCart = JSON.parse(localStorage.getItem(this.GUEST_CART_KEY)!);
     if (guestCart) {
@@ -42,20 +48,22 @@ export class CartService {
 
   getCart(): Observable<any> {
     if (this.user()) {
-      return this.cart()!
-        ? of(this.cart()!)
-        : this.http.get<ICart>(`${this.apiUrl}/${this.user()?.id}`).pipe(
-            retry(3),
-            tap(() => {
-              this.checkTimeToShowDialog();
-            }),
-          );
+      return this.cart()! ? of(this.cart()!) : this.fetchCart();
     } else {
       if (!this.user() && !this.guestCart.hasOwnProperty('id')) {
         this.createGuestCart();
       }
       return of(this.guestCart);
     }
+  }
+
+  fetchCart() {
+    return this.http.get<ICart>(`${this.apiUrl}/${this.user()?.id}`).pipe(
+      retry(3),
+      tap(() => {
+        this.checkTimeToShowDialog();
+      }),
+    );
   }
 
   checkTimeToShowDialog() {
@@ -178,5 +186,17 @@ export class CartService {
           localStorage.removeItem(this.GUEST_CART_KEY);
         }),
       );
+  }
+
+  performAddToCart(product: IProduct, unit: number) {
+    if (!this.user() && !this.guestCart.hasOwnProperty('id')) {
+      this.createGuestCart();
+      this.store.dispatch(loadCart());
+    }
+    this.store.dispatch(addToCart({ product: product, unit }));
+  }
+
+  refreshCart() {
+    this.store.dispatch(refreshCart());
   }
 }

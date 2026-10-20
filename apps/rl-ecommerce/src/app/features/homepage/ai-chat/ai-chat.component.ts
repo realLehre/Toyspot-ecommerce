@@ -79,7 +79,6 @@ export class AiChatComponent implements AfterViewInit {
           this.chatHistory.set(formatedHistory);
           this.backgroundHistory.set(formatedHistory);
           this.aiChatService.performActions(response.actions);
-          console.log(response);
           this.isLoading.set(false);
           this.scrollToBottom();
         },

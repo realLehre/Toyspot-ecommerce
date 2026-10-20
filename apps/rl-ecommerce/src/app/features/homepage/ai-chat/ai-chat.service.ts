@@ -38,6 +38,10 @@ export class AiChatService {
         updateCartOperations.add(a);
       }
 
+      if (a.type === 'ORDER_PLACED') {
+        this.cartService.refreshCart();
+      }
+
       if (a.type === 'ITEM_REMOVED_FROM_CART') {
         this.cartService.refreshCart();
         this.toast.showToast({

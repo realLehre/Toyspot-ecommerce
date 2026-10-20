@@ -28,7 +28,8 @@
           <span class="text-type_title_gray font-medium">Country:</span>
           <span>{{ address().country }}</span>
         </p>
-        <p class="text-type_caption text-sm">
+        <p class="text-type_caption text-sm break-words space-x-1">
+          <span class="text-type_title_gray font-medium">Phone Number:</span>
           <span>{{ address().phoneNumber }}</span>
           @if (address().additionalPhoneNumber) {
             <span> / {{ address().additionalPhoneNumber }} </span>

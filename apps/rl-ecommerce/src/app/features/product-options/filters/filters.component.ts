@@ -13,6 +13,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { ProductOptionsService } from '../services/product-options.service';
 import { ProductsService } from '../../products/services/products.service';
 import { LayoutService } from '../../../shared/services/layout.service';
+import { NumbersOnlyDirective } from '../../../shared/directives/number-only.directive';
 
 @Component({
   selector: 'app-filters',
@@ -25,6 +26,7 @@ import { LayoutService } from '../../../shared/services/layout.service';
     FormsModule,
     DecimalPipe,
     RadioButtonModule,
+    NumbersOnlyDirective,
   ],
   templateUrl: './filters.component.html',
   styleUrl: './filters.component.scss',
@@ -38,7 +40,7 @@ export class FiltersComponent {
   currentPriceFilter = this.optionsService.currentPriceFilter;
   rangeValues = computed(() => {
     if (this.currentPriceFilter()) {
-      return [this.currentPriceFilter()?.min, this.currentPriceFilter()?.max];
+      return [+this.currentPriceFilter()?.min, +this.currentPriceFilter()?.max];
     } else {
       return [2000, 10000];
     }
@@ -106,5 +108,19 @@ export class FiltersComponent {
     this.optionsService.currentRating.set(null);
     this.productService.productSignal.set(null);
     this.optionsService.setDataAndRoute();
+  }
+
+  protected updateRange(type: string) {
+    if (type === 'min') {
+      this.currentPriceFilter.update((current) => ({
+        min: +this.rangeValues()[0],
+        max: current ? current.max : null,
+      }));
+    } else {
+      this.currentPriceFilter.update((current) => ({
+        min: current ? current.min : null,
+        max: +this.rangeValues()[1],
+      }));
+    }
   }
 }

@@ -1,0 +1,209 @@
+<!-- Floating Chat Toggle Button (Bottom Right) -->
+<button
+  type="button"
+  class="fixed bottom-6 right-6 z-50 bg-[#800020] hover:bg-[#600018] text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#800020]/40 cursor-pointer"
+  (click)="toggleChat()"
+  [attr.aria-expanded]="isOpen()"
+  aria-label="Toggle AI Assistant Chat"
+>
+  @if (!isOpen()) {
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-7 h-7"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+      />
+    </svg>
+  } @else {
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-6 h-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  }
+</button>
+
+<!-- Floating Chat Window -->
+@if (isOpen()) {
+  <div
+    class="fixed bottom-24 right-6 z-50 w-[92vw] max-w-[380px] h-[520px] bg-white rounded-2xl shadow-2xl border border-border_subtle flex flex-col overflow-hidden"
+    role="dialog"
+    aria-label="RL AI Shopping Assistant Chat"
+  >
+    <!-- Chat Header -->
+    <div
+      class="bg-[#800020] text-white px-4 py-3 flex items-center justify-between shadow-sm"
+    >
+      <div class="flex items-center space-x-2">
+        <span class="w-2.5 h-2.5 bg-green-400 rounded-full inline-block"></span>
+        <div>
+          <h2 class="font-semibold text-sm leading-tight text-white">
+            ToySpot AI Assistant
+          </h2>
+          <p class="text-[11px] text-gray-200">
+            Online • Product & Order Support
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="text-white hover:text-gray-200 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer"
+        (click)="toggleChat()"
+        aria-label="Close Chat Window"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <p class="text-type_grey text-sm p-2">
+      Welcome to the ToySpot AI Shopping Assistant!
+    </p>
+
+    <!-- Messages Container -->
+    <div
+      #messagesScroll
+      class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#F6F1E9]/30 text-sm"
+      tabindex="0"
+      aria-live="polite"
+    >
+      @for (msg of chatHistory(); track $index) {
+        <div
+          class="flex flex-col"
+          [class.items-end]="msg.role === 'user'"
+          [class.items-start]="msg.role === 'ai'"
+        >
+          <div
+            class="max-w-[85%] px-3.5 py-2.5 rounded-2xl whitespace-pre-line shadow-sm leading-relaxed"
+            [class]="msg.role === 'user' ? userClasses : aiClasses"
+          >
+            {{ msg.parts[0].text }}
+          </div>
+
+          @if (chatError() && $last) {
+            <button
+              class="text-red-500 underline text-xs mt-1 border-0 bg-transparent"
+              (click)="sendMessage('resend')"
+            >
+              ! Resend
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    @if (isLoading()) {
+      <div class="p-2 flex items-start">
+        <div
+          class="bg-white border border-border_subtle px-4 py-3 rounded-2xl rounded-bl-none shadow-sm flex items-center space-x-1.5"
+        >
+          <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+          <span
+            class="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"
+          ></span>
+          <span
+            class="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"
+          ></span>
+        </div>
+      </div>
+    }
+
+    <!-- Quick Suggestions -->
+    <div
+      class="px-3 py-2 bg-white border-t border-gray-100 flex gap-1.5 overflow-x-auto text-[11px] no-scrollbar"
+    >
+      <button
+        type="button"
+        class="bg-bg_subtle hover:bg-gray-200 text-type_grey px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-colors"
+        (click)="
+          userInput.set('Show products under 30 days old'); sendMessage()
+        "
+      >
+        Products &lt; 30 days
+      </button>
+      <button
+        type="button"
+        class="bg-bg_subtle hover:bg-gray-200 text-type_grey px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-colors"
+        (click)="userInput.set('Place order for my cart'); sendMessage()"
+      >
+        Place order
+      </button>
+      <button
+        type="button"
+        class="bg-bg_subtle hover:bg-gray-200 text-type_grey px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-colors"
+        (click)="userInput.set('What categories are available?'); sendMessage()"
+      >
+        Categories
+      </button>
+    </div>
+
+    <!-- Message Input Bar -->
+    <div
+      class="p-3 bg-white border-t border-border_subtle flex items-center space-x-2"
+    >
+      <input
+        type="text"
+        [value]="userInput()"
+        (input)="onInput($event)"
+        (keyup.enter)="sendMessage()"
+        placeholder="Type a message..."
+        class="flex-1 bg-bg_subtle border border-border_subtle rounded-full px-4 py-2 text-xs text-type_title focus:outline-none focus:border-[#800020] focus:ring-1 focus:ring-[#800020]"
+        aria-label="Type your message to AI assistant"
+      />
+      <button
+        type="button"
+        class="bg-[#800020] hover:bg-[#600018] text-white p-2.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#800020]/40 cursor-pointer disabled:opacity-50"
+        [disabled]="!userInput().trim()"
+        (click)="sendMessage()"
+        aria-label="Send message"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+}

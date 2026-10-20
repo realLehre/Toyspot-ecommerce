@@ -32,6 +32,14 @@ export class AuthService {
     this.supabase = createClient(
       environment.supabaseUrl!,
       environment.supabaseKey!,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          storage: window.localStorage,
+        },
+      },
     );
     this.onAuthStateChanged();
 

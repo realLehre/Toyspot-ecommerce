@@ -13,10 +13,27 @@
       </button>
     </div>
     <div class="price-slider">
-      <div class="text-type_grey text-sm mb-2">
-        <span>₦{{ rangeValues()[0] | number }}</span>
-        <span> - </span>
-        <span>₦{{ rangeValues()[1] | number }}</span>
+      <!--      <div class="text-type_grey text-sm mb-2">-->
+      <!--        <span>₦{{ rangeValues()[0] | number }}</span>-->
+      <!--        <span> - </span>-->
+      <!--        <span>₦{{ rangeValues()[1] | number }}</span>-->
+      <!--      </div>-->
+      <div class="flex items-center">
+        <span class="flex items-center"
+          >₦<input
+            [(ngModel)]="rangeValues()[0]"
+            (ngModelChange)="updateRange('min')"
+            appNumbersOnly
+            class="text-type_grey text-sm bg-transparent border-0 outline-0 max-w-[60px] min-w-0 focus:outline-none focus:ring-0"
+        /></span>
+        <span class="pr-4"> - </span>
+        <span class="flex items-center">
+          ₦<input
+            [(ngModel)]="rangeValues()[1]"
+            (ngModelChange)="updateRange('max')"
+            appNumbersOnly
+            class="text-type_grey text-sm bg-transparent border-0 outline-0 max-w-[70px] min-w-0 focus:outline-none focus:ring-0"
+        /></span>
       </div>
       <div class="card flex justify-content-center"></div>
       <p-slider

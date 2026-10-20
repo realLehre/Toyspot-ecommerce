@@ -4,6 +4,7 @@ import {
   inject,
   input,
   OnInit,
+  output,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Location, NgClass } from '@angular/common';
@@ -20,7 +21,9 @@ export class BreadcrumbComponent implements OnInit {
   router = inject(Router);
   private location = inject(Location);
   pages = input.required<{ name: string; route: string }[]>();
+  fromCart = input<boolean>(false);
   newPages: { name: string; route: string }[] = [];
+  refreshCart = output<void>();
 
   ngOnInit() {
     const pages = this.pages();
@@ -35,7 +38,7 @@ export class BreadcrumbComponent implements OnInit {
 
     return routerUrlArr.some(
       (item) =>
-        routerUrlArr[routerUrlArr.length - 1] == fragArr[fragArr.length - 1],
+        routerUrlArr[routerUrlArr.length - 1] == fragArr[fragArr.length - 1]
     );
   }
 

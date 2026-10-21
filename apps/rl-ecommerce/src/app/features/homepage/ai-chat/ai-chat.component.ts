@@ -4,12 +4,11 @@ import {
   signal,
   ElementRef,
   viewChild,
-  AfterViewInit,
+  effect,
 } from '@angular/core';
-import { ProductsService } from '../../products/services/products.service';
-import { CartService } from '../../../shared/services/cart.service';
-import { OrderService } from '../../../shared/services/order.service';
-import { AuthService } from '../../auth/services/auth.service';
+import { marked } from 'marked';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 import { AiChatService } from './ai-chat.service';
 
 @Component({
@@ -19,12 +18,9 @@ import { AiChatService } from './ai-chat.service';
   styleUrls: ['./ai-chat.component.scss'],
   standalone: true,
 })
-export class AiChatComponent implements AfterViewInit {
-  private productsService = inject(ProductsService);
-  private cartService = inject(CartService);
-  private orderService = inject(OrderService);
-  private authService = inject(AuthService);
+export class AiChatComponent {
   private aiChatService = inject(AiChatService);
+  private sanitizer = inject(DomSanitizer);
 
   isOpen = signal(false);
   isLoading = signal(false);
@@ -39,8 +35,14 @@ export class AiChatComponent implements AfterViewInit {
 
   messagesContainer = viewChild<ElementRef>('messagesScroll');
 
-  ngAfterViewInit() {
-    this.scrollToBottom();
+  constructor() {
+    effect(() => {
+      if (this.isOpen()) {
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 100);
+      }
+    });
   }
 
   toggleChat() {
@@ -59,6 +61,7 @@ export class AiChatComponent implements AfterViewInit {
       action === 'resend'
         ? this.chatHistory()[this.chatHistory().length - 1].parts[0].text
         : this.userInput().trim();
+
     if (!text) return;
 
     this.userInput.set('');
@@ -100,12 +103,19 @@ export class AiChatComponent implements AfterViewInit {
     ]);
   }
 
+  renderMarkdown(text: string): SafeHtml {
+    if (!text) return '';
+    const parsedHtml = marked.parse(text) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(parsedHtml);
+  }
+
   private scrollToBottom() {
     const container = this.messagesContainer();
     if (container) {
       setTimeout(() => {
         container.nativeElement.scrollTo({
           top: container.nativeElement.scrollHeight,
+          behavior: 'smooth',
         });
       }, 50);
     }

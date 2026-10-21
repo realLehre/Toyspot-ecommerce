@@ -2,7 +2,7 @@
 
 ## Description
 
-Toyspot is an e-commerce application with separate user and admin dashboards. It provides a rich set of features, including product browsing, cart management, and an admin panel for managing products, orders, and users.
+Toyspot is an e-commerce application with separate user and admin dashboards. It provides a rich set of features, including AI Integration, product browsing, cart management, and an admin panel for managing products, orders, and users.
 
 ---
 
@@ -15,6 +15,7 @@ Toyspot is an e-commerce application with separate user and admin dashboards. It
 ---
 
 ### User Features
+- **AI Assistance**: For general product actions (search, orders etc) and customer support.
 - **Registration & Login**: Secure user authentication system.
 - **Product Browsing**: View and search for products.
 - **Cart Management**: Add, update, and remove items from the cart.
@@ -61,6 +62,7 @@ Toyspot is an e-commerce application with separate user and admin dashboards. It
 
 ### User/shop
 ![Homepage](screenshots/homepage.png)
+![AI Chat](screenshots/ai-chat.png)
 ![Product details](screenshots/product-details.png)
 ![Cart](screenshots/cart.png)
 ![Checkout](screenshots/checkout.png)

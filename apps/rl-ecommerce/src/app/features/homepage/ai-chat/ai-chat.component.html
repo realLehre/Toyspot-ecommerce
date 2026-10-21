@@ -105,11 +105,10 @@
           [class.items-start]="msg.role === 'ai'"
         >
           <div
-            class="max-w-[85%] px-3.5 py-2.5 rounded-2xl whitespace-pre-line shadow-sm leading-relaxed"
+            class="chat-msg max-w-[85%] px-3.5 py-2.5 rounded-2xl shadow-sm leading-relaxed !list-decimal !list-inside"
+            [innerHTML]="renderMarkdown(msg.parts[0].text)"
             [class]="msg.role === 'user' ? userClasses : aiClasses"
-          >
-            {{ msg.parts[0].text }}
-          </div>
+          ></div>
 
           @if (chatError() && $last) {
             <button
@@ -139,35 +138,6 @@
       </div>
     }
 
-    <!-- Quick Suggestions -->
-    <div
-      class="px-3 py-2 bg-white border-t border-gray-100 flex gap-1.5 overflow-x-auto text-[11px] no-scrollbar"
-    >
-      <button
-        type="button"
-        class="bg-bg_subtle hover:bg-gray-200 text-type_grey px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-colors"
-        (click)="
-          userInput.set('Show products under 30 days old'); sendMessage()
-        "
-      >
-        Products &lt; 30 days
-      </button>
-      <button
-        type="button"
-        class="bg-bg_subtle hover:bg-gray-200 text-type_grey px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-colors"
-        (click)="userInput.set('Place order for my cart'); sendMessage()"
-      >
-        Place order
-      </button>
-      <button
-        type="button"
-        class="bg-bg_subtle hover:bg-gray-200 text-type_grey px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-colors"
-        (click)="userInput.set('What categories are available?'); sendMessage()"
-      >
-        Categories
-      </button>
-    </div>
-
     <!-- Message Input Bar -->
     <div
       class="p-3 bg-white border-t border-border_subtle flex items-center space-x-2"
@@ -184,7 +154,7 @@
       <button
         type="button"
         class="bg-[#800020] hover:bg-[#600018] text-white p-2.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#800020]/40 cursor-pointer disabled:opacity-50"
-        [disabled]="!userInput().trim()"
+        [disabled]="!userInput().trim() || isLoading()"
         (click)="sendMessage()"
         aria-label="Send message"
       >

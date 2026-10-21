@@ -13,6 +13,12 @@
   box-sizing: border-box;
 }
 
+.chat-msg ol,
+.chat-msg ul {
+  list-style-type: decimal !important;
+  padding-left: 1.5em;
+}
+
 .desc ul {
   list-style-type: disc !important;
   padding-left: 1.5em;
